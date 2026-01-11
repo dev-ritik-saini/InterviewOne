@@ -1,16 +1,18 @@
 {
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "inngest": "^3.48.1",
     "mongoose": "^9.1.2"
   },
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "scr/server.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server.js"
+    "start": "npm run prod"
   },
   "keywords": [],
   "author": "",
