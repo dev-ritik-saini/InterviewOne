@@ -1,6 +1,7 @@
 import { Inngest } from "inngest";
 import { connectDB } from "./db.js";
 import User from "../models/User.js";
+import { deleteStreamUser, upsertStreamUser } from "./stream.js";
 
 export const inngest = new Inngest({ id: "InterviewOne" });
 
@@ -17,7 +18,16 @@ const syncUser = inngest.createFunction(
             name: `${first_name || ""} ${last_name || ""}`,
             profileImage: image_url
         }
+        // Sending data to mongoDB
         await User.create(newUser);
+
+        // Registering with stream api user
+
+        await upsertStreamUser({
+            id: newUser.clerkId.toString(),
+            name: newUser.name,
+            image: newUser.profileImage,
+        });
     }
 );
 
@@ -28,7 +38,12 @@ const deleteUser = inngest.createFunction(
     async ({ event }) => {
         await connectDB();
         const { id } = event.data;
+        // Deleting from MongoDB
         await User.deleteOne({ clerkId: id });
+
+        // Deleting user from stream api 
+        await deleteStreamUser(id.toString());
+
     }
 );
 

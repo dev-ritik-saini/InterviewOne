@@ -1,13 +1,17 @@
 import express from "express";
 import { ENV } from "./lib/env.js";
 import { connectDB } from "./lib/db.js";
+import { clerkMiddleware } from "@clerk/express"
 import cors from "cors";
-import { serve } from "inngest/express"
-import { inngest, functions } from "./lib/inngest.js"
+import chatRoutes from "./routes/chatRoutes.js";
+import { serve } from "inngest/express";
+import { inngest, functions } from "./lib/inngest.js";
+import { protectRoute } from "./middleware/protectRoute.js";
 const app = express();
 
 //middlewares 
 app.use(express.json());
+app.use(clerkMiddleware()); // this add auth to field to request object :req.auth()
 
 //Handling cors policy
 app.use(cors({
@@ -16,10 +20,18 @@ app.use(cors({
 }
 ));
 //inngest integration 
-app.use("/api/inngest", serve({ client: inngest, functions }))
+app.use("/api/inngest", serve({ client: inngest, functions }));
 
-app.get("/api/health", (req, res) => { res.status(200).json({ msg: "Server is sending api response." }) });
+//Signup and Signin Api
+app.get("/sign-up", (req, res) => { res.status(200).json({ msg: "Server is sending api response." }) });
+app.get("/sign-in", (req, res) => { res.status(200).json({ msg: "Server is sending api response." }) });
 
+//Chat routes 
+app.use("/api/chat", chatRoutes);
+
+
+
+// Server starting script
 const startServer = async () => {
     try {
         if (!ENV.DB_URL) {
