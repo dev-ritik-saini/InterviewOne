@@ -7,6 +7,7 @@ import chatRoutes from "./routes/chatRoutes.js";
 import { serve } from "inngest/express";
 import { inngest, functions } from "./lib/inngest.js";
 import { protectRoute } from "./middleware/protectRoute.js";
+import sessionRoutes from "./routes/sessionRoutes.js"
 const app = express();
 
 //middlewares 
@@ -28,6 +29,7 @@ app.get("/sign-in", (req, res) => { res.status(200).json({ msg: "Server is sendi
 
 //Chat routes 
 app.use("/api/chat", chatRoutes);
+app.use("/api/sessions", sessionRoutes);
 
 
 

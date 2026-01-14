@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@clerk/express": "^1.7.62",
+    "@stream-io/node-sdk": "^0.7.33",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",

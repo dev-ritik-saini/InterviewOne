@@ -28,6 +28,8 @@ const syncUser = inngest.createFunction(
             name: newUser.name,
             image: newUser.profileImage,
         });
+
+        // TODO: Send a welcome Email after registration.
     }
 );
 
