@@ -10,7 +10,7 @@ import {
 function App() {
   return (
     <>
-      <h1>Welcome to InterviewOne</h1>
+      <h1 className="text-3xl font-bold">Welcome to InterviewOne</h1>
 
       <SignedOut>
         <SignInButton mode="modal"></SignInButton>
