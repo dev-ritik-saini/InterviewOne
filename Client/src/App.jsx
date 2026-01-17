@@ -5,24 +5,37 @@ import {
   SignOutButton,
   SignUpButton,
   UserButton,
+  useUser,
 } from "@clerk/clerk-react";
 
+import { Route, Routes, Navigate } from "react-router-dom";
+import Home from "./Components/Pages/Home.jsx";
+import Problem from "./Components/Pages/Problem.jsx";
+import About from "./Components/Pages/About.jsx";
+import { Toaster } from "react-hot-toast";
+import Dashboard from "./Components/Pages/Dashboard.jsx";
+
 function App() {
+  const { isSignedIn, isLoaded } = useUser();
+  if (!isLoaded) return null;
   return (
-    <>
-      <h1 className="text-3xl font-bold">Welcome to InterviewOne</h1>
+    <div data-theme="dark">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route
+          path="/dashboard"
+          element={isSignedIn ? <Dashboard /> : <Navigate to="/" />}
+        />
 
-      <SignedOut>
-        <SignInButton mode="modal"></SignInButton>
-        <SignUpButton mode="modal" />
-      </SignedOut>
+        <Route
+          path="/problem"
+          element={isSignedIn ? <Problem /> : <Navigate to="/" />}
+        />
+      </Routes>
 
-      <SignedIn>
-        <SignOutButton />
-      </SignedIn>
-
-      <UserButton />
-    </>
+      <Toaster toastOptions={{ duration: 3000 }} />
+    </div>
   );
 }
 
