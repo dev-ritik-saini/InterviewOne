@@ -75,7 +75,7 @@ const CodeEditor = ({ language, code, onChange }) => {
         height="100%"
         language={getMonacoLanguage(language)}
         value={code}
-        onChange={(value) => onChange(value || "")}
+        onChange={(value) => onChange?.(value || "")}
         onMount={handleEditorDidMount}
         options={editorOptions}
         loading={

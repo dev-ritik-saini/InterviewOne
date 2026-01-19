@@ -179,8 +179,8 @@ const ProblemPage = () => {
             {problem.examples.map((example, index) => (
               <div key={index} className="mb-4 last:mb-0">
                 <p className="text-sm font-medium text-base-content mb-2">
-                  {index + 1} &nbsp; Example {index + 1}
-                </p>
+                  Example {index + 1}
+                </p>{" "}
                 <div className="font-mono text-sm">
                   <p className="text-base-content/80">
                     <span className="text-primary">Input:</span> {example.input}

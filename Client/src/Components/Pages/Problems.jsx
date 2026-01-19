@@ -97,8 +97,8 @@ const Problem = () => {
                       {problem.category}
                     </p>
                     <p className="text-sm text-base-content/70 line-clamp-2">
-                      {problem.description.text}
-                    </p>
+                      {problem.description?.text}
+                    </p>{" "}
                   </div>
                 </div>
 

@@ -64,7 +64,7 @@ const Home = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-wrap gap-4 pt-4">
-            <Link to="/problem" className="btn btn-primary btn-lg">
+            <Link to="/problems" className="btn btn-primary btn-lg">
               Start Coding Now
               <FiArrowRight className="h-5 w-5 ml-1" />
             </Link>
@@ -254,7 +254,7 @@ const Home = () => {
               practice, prepare, and succeed in their technical interviews.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/signup" className="btn btn-primary btn-lg">
+              <Link to="/problems" className="btn btn-primary btn-lg">
                 Start Coding Now
                 <FiArrowRight className="h-5 w-5 ml-1" />
               </Link>

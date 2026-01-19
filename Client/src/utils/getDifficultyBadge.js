@@ -1,5 +1,5 @@
 export const getDifficultyBadge = (difficulty) => {
-    switch (difficulty.toLowerCase()) {
+    switch (difficulty?.toLowerCase()) {
         case "easy":
             return "bg-success text-success-content";
         case "medium":

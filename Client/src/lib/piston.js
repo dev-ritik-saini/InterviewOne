@@ -9,7 +9,7 @@ const LANGUAGES_VERSION = {
 
 /**
  * @param {string} language - programming language
- * @param {string} code - source code to execcute
+ * @param {string} code - source code to execute
  * @returns {Promise<{success:boolean, output:string, error?: string}>}
  */
 

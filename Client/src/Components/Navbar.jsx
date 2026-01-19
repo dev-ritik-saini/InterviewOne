@@ -1,10 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
-import { BsCodeSlash, BsGrid } from "react-icons/bs";
+import {
+  SignInButton,
+  SignOutButton,
+  UserButton,
+  useUser,
+} from "@clerk/clerk-react";
+import { BsCodeSlash, BsGrid, BsBoxArrowRight } from "react-icons/bs";
 
 const Navbar = () => {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
 
   return (
     <nav className="bg-base-100/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
@@ -24,7 +29,9 @@ const Navbar = () => {
 
         {/* Right: Navigation */}
         <div className="flex items-center gap-4">
-          {isSignedIn ? (
+          {!isLoaded ? (
+            <span className="loading loading-spinner loading-sm"></span>
+          ) : isSignedIn ? (
             <>
               <Link to="/problems" className="btn btn-primary btn-sm gap-2">
                 <BsCodeSlash className="h-4 w-4" />
@@ -34,6 +41,12 @@ const Navbar = () => {
                 <BsGrid className="h-4 w-4" />
                 Dashboard
               </Link>
+              <SignOutButton>
+                <button className="btn btn-ghost btn-sm gap-2 text-error hover:bg-error/10">
+                  <BsBoxArrowRight className="h-4 w-4" />
+                  Log Out
+                </button>
+              </SignOutButton>
               <UserButton afterSignOutUrl="/" />
             </>
           ) : (

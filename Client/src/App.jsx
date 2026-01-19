@@ -1,16 +1,8 @@
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignOutButton,
-  SignUpButton,
-  UserButton,
-  useUser,
-} from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 
 import { Route, Routes, Navigate } from "react-router-dom";
 import Home from "./Components/Pages/Home.jsx";
-import Problem from "./Components/Pages/Problems.jsx";
+import Problems from "./Components/Pages/Problems.jsx";
 import ProblemPage from "./Components/Pages/ProblemPage.jsx";
 import About from "./Components/Pages/About.jsx";
 import { Toaster } from "react-hot-toast";
@@ -31,7 +23,7 @@ function App() {
 
         <Route
           path="/problems"
-          element={isSignedIn ? <Problem /> : <Navigate to="/" />}
+          element={isSignedIn ? <Problems /> : <Navigate to="/" />}
         />
         <Route
           path="/problem/:problemId"
