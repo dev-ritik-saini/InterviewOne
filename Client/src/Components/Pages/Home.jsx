@@ -9,34 +9,14 @@ import {
   BsShield,
   BsGlobe,
 } from "react-icons/bs";
-import { SignInButton } from "@clerk/clerk-react";
 import Footer from "../Footer";
+import Navbar from "../Navbar";
 
 const Home = () => {
   return (
     <div className="min-h-screen bg-base-100">
       {/* Navbar */}
-      <nav className="bg-base-100/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Left: Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-3 hover:scale-105 transition-transform duration-200"
-          >
-            <img src="/logo.svg" alt="Logo" className="h-12 w-auto" />
-            <div className="flex flex-col">
-              <h1 className="text-3xl font-bold tracking-tight text-base-content">
-                Interview<span className="text-primary">One</span>
-              </h1>
-            </div>
-          </Link>
-
-          {/* Right: CTA */}
-          <SignInButton mode="modal">
-            <button className="btn btn-primary">Get Started</button>
-          </SignInButton>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative max-w-7xl mx-auto px-6 py-16 lg:py-24 overflow-hidden">
