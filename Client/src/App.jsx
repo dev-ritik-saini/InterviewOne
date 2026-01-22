@@ -31,7 +31,29 @@ function App() {
         />
       </Routes>
 
-      <Toaster toastOptions={{ duration: 3000 }} />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#1d232a",
+            color: "#a6adbb",
+            border: "1px solid #373f47",
+          },
+          success: {
+            iconTheme: {
+              primary: "#36d399",
+              secondary: "#1d232a",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "#f87272",
+              secondary: "#1d232a",
+            },
+          },
+        }}
+      />
     </div>
   );
 }

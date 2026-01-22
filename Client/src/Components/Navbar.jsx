@@ -1,15 +1,25 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import {
-  SignInButton,
-  SignOutButton,
-  UserButton,
-  useUser,
-} from "@clerk/clerk-react";
-import { BsCodeSlash, BsGrid, BsBoxArrowRight } from "react-icons/bs";
+import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
+import { BsCodeSlash, BsGrid } from "react-icons/bs";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
+  const prevSignedIn = useRef(null);
+
+  // Show toast on sign in/out
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (prevSignedIn.current === false && isSignedIn) {
+      toast.success(`Welcome back, ${user?.firstName || "User"}!`);
+    } else if (prevSignedIn.current === true && !isSignedIn) {
+      toast.success("Signed out successfully");
+    }
+
+    prevSignedIn.current = isSignedIn;
+  }, [isSignedIn, isLoaded, user]);
 
   return (
     <nav className="bg-base-100/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50">
@@ -41,12 +51,6 @@ const Navbar = () => {
                 <BsGrid className="h-4 w-4" />
                 Dashboard
               </Link>
-              <SignOutButton>
-                <button className="btn btn-ghost btn-sm gap-2 text-error hover:bg-error/10">
-                  <BsBoxArrowRight className="h-4 w-4" />
-                  Log Out
-                </button>
-              </SignOutButton>
               <UserButton afterSignOutUrl="/" />
             </>
           ) : (
