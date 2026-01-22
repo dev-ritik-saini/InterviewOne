@@ -12,6 +12,7 @@ import { getDifficultyBadge } from "../../utils/getDifficultyBadge";
 import CodeEditor from "../CodeEditor";
 import Navbar from "../Navbar";
 import { executeCode } from "../../lib/piston";
+import toast from "react-hot-toast";
 
 const ProblemPage = () => {
   const { problemId } = useParams();
@@ -105,6 +106,7 @@ const ProblemPage = () => {
       setOutput("No code to execute");
       setIsError(true);
       setActiveOutputTab("result");
+      toast.error("Please write some code first");
       return;
     }
 
@@ -118,13 +120,16 @@ const ProblemPage = () => {
       if (result.success) {
         setOutput(result.output);
         setIsError(false);
+        toast.success("Code executed successfully!");
       } else {
         setOutput(result.error || result.output || "Execution failed");
         setIsError(true);
+        toast.error("Code execution failed");
       }
     } catch (error) {
       setOutput(`Error: ${error.message}`);
       setIsError(true);
+      toast.error(`Error: ${error.message}`);
     } finally {
       setIsRunning(false);
     }
