@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   useCall,
   useCallStateHooks,
@@ -40,14 +40,14 @@ const VideoCallUI = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex-1 flex flex-col overflow-hidden h-full">
       {/* Video Grid */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative min-h-0 overflow-hidden">
         <SpeakerLayout participantsBarPosition="bottom" />
       </div>
 
       {/* Call Controls */}
-      <div className="p-2 bg-base-300/80 border-t border-base-300">
+      <div className="shrink-0 p-3 bg-base-300 border-t border-base-300 flex justify-center">
         <CallControls />
       </div>
     </div>
@@ -59,9 +59,12 @@ const VideoCall = ({ callId }) => {
   const [call, setCall] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const callRef = useRef(null);
 
   useEffect(() => {
     if (!videoClient || !callId) return;
+
+    let isMounted = true;
 
     const joinCall = async () => {
       try {
@@ -70,20 +73,31 @@ const VideoCall = ({ callId }) => {
 
         const newCall = videoClient.call("default", callId);
         await newCall.join({ create: false });
+
+        if (!isMounted) {
+          newCall.leave().catch(console.error);
+          return;
+        }
+
+        callRef.current = newCall;
         setCall(newCall);
         setIsLoading(false);
       } catch (err) {
         console.error("Error joining call:", err);
-        setError(err);
-        setIsLoading(false);
+        if (isMounted) {
+          setError(err);
+          setIsLoading(false);
+        }
       }
     };
 
     joinCall();
 
     return () => {
-      if (call) {
-        call.leave().catch(console.error);
+      isMounted = false;
+      if (callRef.current) {
+        callRef.current.leave().catch(console.error);
+        callRef.current = null;
       }
     };
   }, [videoClient, callId]);

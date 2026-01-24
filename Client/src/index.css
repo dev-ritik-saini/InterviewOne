@@ -43,6 +43,36 @@
 
 .str-video__call-controls {
     background: oklch(var(--b3) / 0.8);
+    display: flex !important;
+    gap: 0.5rem;
+}
+
+.str-video__call-controls__button {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: oklch(var(--b2));
+    color: oklch(var(--bc));
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.str-video__call-controls__button:hover {
+    background: oklch(var(--b1));
+}
+
+.str-video__call-controls__button--active {
+    background: oklch(var(--er));
+    color: white;
+}
+
+.str-video__call-controls__button svg {
+    width: 20px;
+    height: 20px;
 }
 
 .str-video__participant-view {

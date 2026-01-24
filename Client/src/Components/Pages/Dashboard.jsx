@@ -343,9 +343,12 @@ const Dashboard = () => {
                 <p className="text-base-content/60 mb-4">
                   No live sessions at the moment
                 </p>
-                <Link to="/problems" className="btn btn-primary btn-sm">
+                <button
+                  onClick={openCreateModal}
+                  className="btn btn-primary btn-sm"
+                >
                   Start a Session
-                </Link>
+                </button>
               </div>
             )}
           </div>

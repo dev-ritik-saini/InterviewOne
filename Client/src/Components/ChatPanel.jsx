@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Channel,
   ChannelHeader,
@@ -15,9 +15,12 @@ const ChatPanel = ({ channelId }) => {
   const [channel, setChannel] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const channelRef = useRef(null);
 
   useEffect(() => {
     if (!client || !channelId) return;
+
+    let isMounted = true;
 
     const initChannel = async () => {
       try {
@@ -26,20 +29,31 @@ const ChatPanel = ({ channelId }) => {
 
         const ch = client.channel("messaging", channelId);
         await ch.watch();
+
+        if (!isMounted) {
+          ch.stopWatching();
+          return;
+        }
+
+        channelRef.current = ch;
         setChannel(ch);
         setIsLoading(false);
       } catch (err) {
         console.error("Error initializing chat channel:", err);
-        setError(err);
-        setIsLoading(false);
+        if (isMounted) {
+          setError(err);
+          setIsLoading(false);
+        }
       }
     };
 
     initChannel();
 
     return () => {
-      if (channel) {
-        channel.stopWatching();
+      isMounted = false;
+      if (channelRef.current) {
+        channelRef.current.stopWatching();
+        channelRef.current = null;
       }
     };
   }, [client, channelId]);
