@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
+import toast from "react-hot-toast";
 import {
   BsCodeSlash,
   BsPeople,
@@ -105,6 +106,19 @@ const SessionPage = () => {
       }
     }
   }, [session, user, joinSession]);
+
+  // Redirect when session is ended (completed)
+  useEffect(() => {
+    if (session && session.status === "completed") {
+      const isHost = session.host?.clerkId === user?.id;
+      if (isHost) {
+        toast.success("Session ended successfully");
+      } else {
+        toast.success("The host has ended this session");
+      }
+      navigate("/dashboard");
+    }
+  }, [session, user, navigate]);
 
   // Handle resize for output panel (vertical)
   const handleOutputResizeStart = useCallback((e) => {

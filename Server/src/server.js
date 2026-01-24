@@ -9,16 +9,16 @@ import { inngest, functions } from "./lib/inngest.js";
 import sessionRoutes from "./routes/sessionRoutes.js"
 const app = express();
 
+//Handling cors policy - MUST be before other middleware and routes
+app.use(cors({
+    origin: ENV.CLIENT_URL,
+    credentials: true,
+}));
+
 //middlewares 
 app.use(express.json());
 app.use(clerkMiddleware()); // this add auth to field to request object :req.auth()
 
-//Handling cors policy
-app.use(cors({
-    origin: ENV.CLIENT_URL,
-    credentials: true,
-}
-));
 //inngest integration 
 app.use("/api/inngest", serve({ client: inngest, functions }));
 

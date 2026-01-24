@@ -48,8 +48,13 @@ export async function createSession(req, res) {
 //===> Find active sessions for two way communication
 export async function getActiveSessions(_, res) {
     try {
-        const sessions = await Session.find({ status: "active" })
+        // Only show sessions that are active AND don't have a participant yet (not full)
+        const sessions = await Session.find({ 
+            status: "active",
+            participant: null  // Only show sessions that aren't full
+        })
             .populate("host", "name profileImage email clerkId")
+            .populate("participant", "name profileImage email clerkId")
             .sort({ createdAt: -1 })
             .limit(20);
 
@@ -107,14 +112,14 @@ export async function joinSession(req, res) {
 
         if (!session) return res.status(404).json({ message: "Session not found" });
 
-        if (session !== "active") {
+        if (session.status !== "active") {
             return res.status(400).json({ message: "Cannot join a completed session" });
         }
-        if (session.host.toString === userId.toString()) {
+        if (session.host.toString() === userId.toString()) {
             return res.status(400).json({ message: "Host cannot join their own session as participant" });
         }
 
-        if (session.participant) return res.status(404).json({ message: "Session is Full " })
+        if (session.participant) return res.status(400).json({ message: "Session is full. Only 1 participant allowed." })
 
         session.participant = userId
         await session.save()

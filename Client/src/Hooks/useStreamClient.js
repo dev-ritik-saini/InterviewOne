@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { StreamChat } from "stream-chat";
 import { StreamVideoClient } from "@stream-io/video-react-sdk";
@@ -13,11 +13,17 @@ export const useStreamClient = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Use refs to track clients for cleanup (avoids stale closure issue)
+  const chatClientRef = useRef(null);
+  const videoClientRef = useRef(null);
+
   useEffect(() => {
     if (!isLoaded || !user) {
       setIsLoading(false);
       return;
     }
+
+    let isMounted = true;
 
     const initClients = async () => {
       try {
@@ -27,6 +33,8 @@ export const useStreamClient = () => {
         // Get tokens from backend
         const { token, videoToken, userId, userName, userImage } =
           await sessionApi.getStreamToken();
+
+        if (!isMounted) return;
 
         // Initialize Chat Client
         const chat = StreamChat.getInstance(STREAM_API_KEY);
@@ -38,6 +46,13 @@ export const useStreamClient = () => {
           },
           token
         );
+        
+        if (!isMounted) {
+          chat.disconnectUser();
+          return;
+        }
+        
+        chatClientRef.current = chat;
         setChatClient(chat);
 
         // Initialize Video Client
@@ -50,25 +65,38 @@ export const useStreamClient = () => {
           },
           token: videoToken,
         });
+        
+        if (!isMounted) {
+          chat.disconnectUser();
+          video.disconnectUser();
+          return;
+        }
+        
+        videoClientRef.current = video;
         setVideoClient(video);
 
         setIsLoading(false);
       } catch (err) {
         console.error("Error initializing Stream clients:", err);
-        setError(err);
-        setIsLoading(false);
+        if (isMounted) {
+          setError(err);
+          setIsLoading(false);
+        }
       }
     };
 
     initClients();
 
-    // Cleanup on unmount
+    // Cleanup on unmount - use refs to get current client instances
     return () => {
-      if (chatClient) {
-        chatClient.disconnectUser();
+      isMounted = false;
+      if (chatClientRef.current) {
+        chatClientRef.current.disconnectUser();
+        chatClientRef.current = null;
       }
-      if (videoClient) {
-        videoClient.disconnectUser();
+      if (videoClientRef.current) {
+        videoClientRef.current.disconnectUser();
+        videoClientRef.current = null;
       }
     };
   }, [user, isLoaded]);
