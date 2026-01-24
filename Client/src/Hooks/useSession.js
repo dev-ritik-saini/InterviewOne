@@ -65,3 +65,12 @@ export const useEndSession = (id) => {
 
     });
 }
+
+export const useUpdateSessionProblem = (id) => {
+    return useMutation({
+        mutationKey: ["updateSessionProblem", id],
+        mutationFn: ({ problem, difficulty }) => sessionApi.updateSessionProblem({ id, problem, difficulty }),
+        onSuccess: () => toast.success("Problem updated"),
+        onError: (error) => toast.error(error.response?.data?.message || "Failed to update problem"),
+    });
+}

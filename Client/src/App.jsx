@@ -7,6 +7,15 @@ import ProblemPage from "./Components/Pages/ProblemPage.jsx";
 import About from "./Components/Pages/About.jsx";
 import { Toaster } from "react-hot-toast";
 import Dashboard from "./Components/Pages/Dashboard.jsx";
+import SessionPage from "./Components/Pages/SessionPage.jsx";
+import { StreamProvider } from "./Components/StreamProvider.jsx";
+
+// Wrap SessionPage with StreamProvider
+const SessionPageWithStream = () => (
+  <StreamProvider>
+    <SessionPage />
+  </StreamProvider>
+);
 
 function App() {
   const { isSignedIn, isLoaded } = useUser();
@@ -28,6 +37,10 @@ function App() {
         <Route
           path="/problem/:problemId"
           element={isSignedIn ? <ProblemPage /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/session/:sessionId"
+          element={isSignedIn ? <SessionPageWithStream /> : <Navigate to="/" />}
         />
       </Routes>
 
