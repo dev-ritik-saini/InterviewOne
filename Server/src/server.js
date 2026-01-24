@@ -22,10 +22,9 @@ app.use(cors({
 //inngest integration 
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
-//Signup and Signin Api
+//Health check endpoints
 app.get("/health", (req, res) => { res.status(200).json({ msg: "Server is sending api response." }) });
 app.get("/", (req, res) => { res.status(200).json({ msg: "Server is running and sending api response." }) });
-
 //Chat routes 
 app.use("/api/chat", chatRoutes);
 app.use("/api/session", sessionRoutes);

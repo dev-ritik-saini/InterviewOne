@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Stream Chat Customizations for Dark Theme */
+.str-chat {
+    --str-chat__primary-color: oklch(var(--p));
+    --str-chat__background-color: oklch(var(--b2));
+    --str-chat__secondary-background-color: oklch(var(--b3));
+    --str-chat__text-color: oklch(var(--bc));
+    --str-chat__border-color: oklch(var(--b3));
+    height: 100%;
+}
+
+.str-chat__message-list {
+    background: transparent;
+}
+
+.str-chat__message-input {
+    background: oklch(var(--b3));
+}
+
+.str-chat__input-flat {
+    background: oklch(var(--b3));
+    border-color: oklch(var(--b3));
+}
+
+.str-chat__input-flat textarea {
+    background: oklch(var(--b3));
+    color: oklch(var(--bc));
+}
+
+.str-chat__send-button {
+    background: oklch(var(--p));
+}
+
+/* Stream Video Customizations */
+.str-video {
+    --str-video__primary-color: oklch(var(--p));
+    --str-video__background-color: oklch(var(--b2));
+    --str-video__text-color: oklch(var(--bc));
+}
+
+.str-video__call-controls {
+    background: oklch(var(--b3) / 0.8);
+}
+
+.str-video__participant-view {
+    background: oklch(var(--b3));
+}

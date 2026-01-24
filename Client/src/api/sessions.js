@@ -25,6 +25,10 @@ export const sessionApi = {
         const response = await axiosInstance.post(`/session/${id}/end`)
         return response.data;
     },
+    updateSessionProblem: async ({ id, problem, difficulty }) => {
+        const response = await axiosInstance.patch(`/session/${id}/problem`, { problem, difficulty })
+        return response.data;
+    },
     getStreamToken: async () => {
         const response = await axiosInstance.get(`/chat/token`)
         return response.data;

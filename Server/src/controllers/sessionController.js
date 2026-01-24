@@ -169,3 +169,42 @@ export async function endSession(req, res) {
         res.status(500).json({ message: "Internal server Error" });
     }
 }
+
+// Update session problem
+export async function updateSessionProblem(req, res) {
+    try {
+        const { id } = req.params;
+        const { problem, difficulty } = req.body;
+        const userId = req.user._id;
+
+        const session = await Session.findById(id);
+
+        if (!session) return res.status(404).json({ message: "Session not found" });
+
+        // Only host can change the problem
+        if (session.host.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Only host can change the problem" });
+        }
+
+        // Can only change problem in active sessions
+        if (session.status !== "active") {
+            return res.status(400).json({ message: "Cannot change problem in a completed session" });
+        }
+
+        session.problem = problem;
+        if (difficulty) {
+            session.difficulty = difficulty.toLowerCase();
+        }
+        await session.save();
+
+        const updatedSession = await Session.findById(id)
+            .populate("host", "name email profileImage clerkId")
+            .populate("participant", "name email profileImage clerkId");
+
+        res.status(200).json({ session: updatedSession, message: "Problem updated successfully" });
+
+    } catch (error) {
+        console.log("Error in updateSessionProblem controller", error.message);
+        res.status(500).json({ message: "Internal server Error" });
+    }
+}

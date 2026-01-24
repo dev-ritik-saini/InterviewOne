@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  BsPlay,
-  BsChevronDown,
-  BsTerminal,
-  BsGripHorizontal,
-} from "react-icons/bs";
-import { FiCheck, FiX } from "react-icons/fi";
+import { BsGripHorizontal } from "react-icons/bs";
 import { PROBLEMS } from "../../data/problems";
 import { getDifficultyBadge } from "../../utils/getDifficultyBadge";
 import CodeEditor from "../CodeEditor";
+import { OutputPanel, EditorHeader } from "../CodeExecutor";
 import Navbar from "../Navbar";
-import { executeCode } from "../../lib/piston";
-import toast from "react-hot-toast";
+import { useCodeExecution } from "../../Hooks/useCodeExecution";
 
 const ProblemPage = () => {
   const { problemId } = useParams();
@@ -21,14 +15,21 @@ const ProblemPage = () => {
   const problem = PROBLEMS[problemId];
   const problemsList = Object.values(PROBLEMS);
 
-  // State for language selection and code
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript");
-  const [code, setCode] = useState("");
-  const [output, setOutput] = useState("");
-  const [isRunning, setIsRunning] = useState(false);
-  const [isError, setIsError] = useState(false);
+  // Code execution hook
+  const {
+    code,
+    language: selectedLanguage,
+    output,
+    isRunning,
+    isError,
+    activeOutputTab,
+    setCode,
+    setLanguage: setSelectedLanguage,
+    setActiveOutputTab,
+    handleRunCode,
+  } = useCodeExecution();
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [activeOutputTab, setActiveOutputTab] = useState("testcase");
   const [outputHeight, setOutputHeight] = useState(180); // Default height in pixels
   const isDragging = useRef(false);
   const containerRef = useRef(null);
@@ -69,20 +70,12 @@ const ProblemPage = () => {
     };
   }, []);
 
-  // Language options
-  const languages = [
-    { id: "javascript", name: "JavaScript" },
-    { id: "python", name: "Python" },
-    { id: "java", name: "Java" },
-  ];
-
   // Set initial code when problem or language changes
   useEffect(() => {
     if (problem) {
       setCode(problem.starterCode[selectedLanguage] || "");
-      setOutput("");
     }
-  }, [problemId, selectedLanguage, problem]);
+  }, [problemId, selectedLanguage, problem, setCode]);
 
   // Handle problem not found
   if (!problem) {
@@ -99,41 +92,6 @@ const ProblemPage = () => {
       </div>
     );
   }
-
-  // Handle run code
-  const handleRunCode = async () => {
-    if (!code.trim()) {
-      setOutput("No code to execute");
-      setIsError(true);
-      setActiveOutputTab("result");
-      toast.error("Please write some code first");
-      return;
-    }
-
-    setIsRunning(true);
-    setOutput("");
-    setIsError(false);
-    setActiveOutputTab("result");
-
-    try {
-      const result = await executeCode(selectedLanguage, code);
-      if (result.success) {
-        setOutput(result.output);
-        setIsError(false);
-        toast.success("Code executed successfully!");
-      } else {
-        setOutput(result.error || result.output || "Execution failed");
-        setIsError(true);
-        toast.error("Code execution failed");
-      }
-    } catch (error) {
-      setOutput(`Error: ${error.message}`);
-      setIsError(true);
-      toast.error(`Error: ${error.message}`);
-    } finally {
-      setIsRunning(false);
-    }
-  };
 
   return (
     <div className="h-screen bg-base-100 flex flex-col overflow-hidden">
@@ -225,71 +183,15 @@ const ProblemPage = () => {
           className="w-full lg:w-1/2 flex flex-col overflow-hidden"
         >
           {/* Editor Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-base-300 bg-base-200/30 shrink-0">
-            {/* Language Dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-base-200 border border-base-300 rounded-lg text-sm hover:border-primary/30 transition-colors"
-              >
-                <img
-                  src={`/${selectedLanguage === "javascript" ? "js" : selectedLanguage}.png`}
-                  alt={selectedLanguage}
-                  className="h-4 w-4"
-                />
-                <span className="capitalize">
-                  {languages.find((l) => l.id === selectedLanguage)?.name}
-                </span>
-                <BsChevronDown
-                  className={`h-3 w-3 transition-transform ${
-                    isDropdownOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {isDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 bg-base-200 border border-base-300 rounded-lg shadow-lg z-10">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.id}
-                      onClick={() => {
-                        setSelectedLanguage(lang.id);
-                        setIsDropdownOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-base-300 transition-colors ${
-                        lang.id === selectedLanguage ? "bg-base-300" : ""
-                      }`}
-                    >
-                      <img
-                        src={`/${lang.id === "javascript" ? "js" : lang.id}.png`}
-                        alt={lang.name}
-                        className="h-4 w-4"
-                      />
-                      {lang.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Run Button */}
-            <button
-              onClick={handleRunCode}
-              disabled={isRunning}
-              className="btn btn-primary btn-sm gap-2"
-            >
-              {isRunning ? (
-                <>
-                  <span className="loading loading-spinner loading-xs"></span>
-                  Running...
-                </>
-              ) : (
-                <>
-                  <BsPlay className="h-4 w-4" />
-                  Run Code
-                </>
-              )}
-            </button>
-          </div>
+          <EditorHeader
+            selectedLanguage={selectedLanguage}
+            onLanguageChange={setSelectedLanguage}
+            onRunCode={handleRunCode}
+            isRunning={isRunning}
+            isDropdownOpen={isDropdownOpen}
+            setIsDropdownOpen={setIsDropdownOpen}
+            showLanguageIcon={true}
+          />
 
           {/* Code Editor Area */}
           <div className="flex-1 bg-base-200/20 overflow-hidden">
@@ -308,114 +210,17 @@ const ProblemPage = () => {
             <BsGripHorizontal className="h-3 w-3 text-base-content/30 group-hover:text-primary" />
           </div>
 
-          {/* Output Section - LeetCode Style */}
-          <div
-            className="border-t border-base-300 shrink-0 bg-base-200/30 flex flex-col"
-            style={{ height: outputHeight }}
-          >
-            {/* Tabs */}
-            <div className="flex items-center gap-1 px-4 py-2 border-b border-base-300 shrink-0">
-              <button
-                onClick={() => setActiveOutputTab("testcase")}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  activeOutputTab === "testcase"
-                    ? "bg-base-300 text-base-content"
-                    : "text-base-content/60 hover:text-base-content hover:bg-base-300/50"
-                }`}
-              >
-                <BsTerminal className="h-4 w-4" />
-                Testcase
-              </button>
-              <button
-                onClick={() => setActiveOutputTab("result")}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  activeOutputTab === "result"
-                    ? "bg-base-300 text-base-content"
-                    : "text-base-content/60 hover:text-base-content hover:bg-base-300/50"
-                }`}
-              >
-                {output ? (
-                  isError ? (
-                    <FiX className="h-4 w-4 text-error" />
-                  ) : (
-                    <FiCheck className="h-4 w-4 text-success" />
-                  )
-                ) : (
-                  <BsTerminal className="h-4 w-4 text-base-content/40" />
-                )}
-                Test Result
-              </button>
-            </div>
-
-            {/* Tab Content */}
-            <div className="flex-1 overflow-y-auto">
-              {activeOutputTab === "testcase" ? (
-                <div className="p-4">
-                  <div className="mb-3">
-                    <p className="text-xs text-base-content/50 mb-1">Input:</p>
-                    <div className="bg-base-300/50 rounded-md px-3 py-2">
-                      <code className="font-mono text-sm text-base-content">
-                        {problem.examples[0]?.input || "No input"}
-                      </code>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-base-content/50 mb-1">
-                      Expected Output:
-                    </p>
-                    <div className="bg-base-300/50 rounded-md px-3 py-2">
-                      <code className="font-mono text-sm text-base-content">
-                        {problem.examples[0]?.output || "No output"}
-                      </code>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-4">
-                  {output ? (
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        {isError ? (
-                          <>
-                            <FiX className="h-5 w-5 text-error" />
-                            <span className="text-error font-semibold">
-                              Error
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <FiCheck className="h-5 w-5 text-success" />
-                            <span className="text-success font-semibold">
-                              Accepted
-                            </span>
-                          </>
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-xs text-base-content/50 mb-1">
-                          {isError ? "Error:" : "Output:"}
-                        </p>
-                        <div
-                          className={`rounded-md px-3 py-2 ${isError ? "bg-error/10 border border-error/30" : "bg-base-300/50"}`}
-                        >
-                          <code
-                            className={`font-mono text-sm whitespace-pre-wrap ${isError ? "text-error" : "text-base-content"}`}
-                          >
-                            {output}
-                          </code>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-base-content/50">
-                      <BsTerminal className="h-8 w-8 mb-2" />
-                      <p className="text-sm">Run your code to see results</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Output Section */}
+          <OutputPanel
+            output={output}
+            isError={isError}
+            activeTab={activeOutputTab}
+            onTabChange={setActiveOutputTab}
+            height={outputHeight}
+            resizable={false}
+            testcase={problem.examples[0]?.input}
+            expectedOutput={problem.examples[0]?.output}
+          />
         </div>
       </main>
     </div>
