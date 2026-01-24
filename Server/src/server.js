@@ -6,7 +6,6 @@ import cors from "cors";
 import chatRoutes from "./routes/chatRoutes.js";
 import { serve } from "inngest/express";
 import { inngest, functions } from "./lib/inngest.js";
-import { protectRoute } from "./middleware/protectRoute.js";
 import sessionRoutes from "./routes/sessionRoutes.js"
 const app = express();
 
@@ -24,12 +23,12 @@ app.use(cors({
 app.use("/api/inngest", serve({ client: inngest, functions }));
 
 //Signup and Signin Api
-app.get("/sign-up", (req, res) => { res.status(200).json({ msg: "Server is sending api response." }) });
-app.get("/sign-in", (req, res) => { res.status(200).json({ msg: "Server is sending api response." }) });
+app.get("/health", (req, res) => { res.status(200).json({ msg: "Server is sending api response." }) });
+app.get("/", (req, res) => { res.status(200).json({ msg: "Server is running and sending api response." }) });
 
 //Chat routes 
 app.use("/api/chat", chatRoutes);
-app.use("/api/sessions", sessionRoutes);
+app.use("/api/session", sessionRoutes);
 
 
 

@@ -6,7 +6,7 @@ export async function createSession(req, res) {
     try {
         const { problem, difficulty } = req.body
         const userId = req.user._id  //mongoDB id
-        const clerkId = req.clerkId
+        const clerkId = req.user.clerkId  // Get clerkId from user object
 
         if (!difficulty || !problem) {
             return res.status(400).json({ message: "Problem and difficulty are required" })
@@ -14,8 +14,11 @@ export async function createSession(req, res) {
         // generate a unique call id for stream video  or uuid
         const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
+        // Convert difficulty to lowercase for enum validation
+        const normalizedDifficulty = difficulty.toLowerCase();
+
         // gereting session in database
-        const session = await Session.create({ problem, difficulty, host: userId, callId })
+        const session = await Session.create({ problem, difficulty: normalizedDifficulty, host: userId, callId })
 
         //creating a video call
         await streamClient.video.call("default", callId).getOrCreate({
