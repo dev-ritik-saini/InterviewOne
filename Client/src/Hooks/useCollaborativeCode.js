@@ -52,7 +52,7 @@ export const useCollaborativeCode = (channelId, problemData) => {
 
   // Create debounced send function
   const sendCodeUpdateRef = useRef(null);
-  
+
   useEffect(() => {
     sendCodeUpdateRef.current = debounce(async (newCode, newLanguage) => {
       if (!channel || !isConnected || !client) return;
@@ -201,7 +201,7 @@ export const useCollaborativeCode = (channelId, problemData) => {
       // Only send if it's a local change
       if (!isLocalChange.current) {
         sendLanguageChange(newLanguage);
-        
+
         // Update code to new language's starter code
         if (problemData?.starterCode?.[newLanguage]) {
           const newCode = problemData.starterCode[newLanguage];
