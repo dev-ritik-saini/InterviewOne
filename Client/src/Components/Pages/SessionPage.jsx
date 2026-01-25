@@ -75,9 +75,9 @@ const SessionPage = () => {
   // Only initialize collaborative code after participant is set (prevents Stream 403 error)
   const isParticipantReady =
     !!session?.participant || (session && session.host?.clerkId === user?.id);
-  const collabCode = isParticipantReady
-    ? useCollaborativeCode(session?.callId, problemData)
-    : null;
+
+  // Call hook unconditionally to preserve Hooks order; the hook handles a falsy channelId
+  const collabCode = useCollaborativeCode(session?.callId, problemData);
 
   // Initialize code when problem data is available
   useEffect(() => {
@@ -350,9 +350,9 @@ const SessionPage = () => {
               <span className="text-xs text-base-content/60">
                 {collabCode?.isConnected ? "Live Sync" : "Connecting..."}
               </span>
-              {remoteUser && (
+              {collabCode?.remoteUser && (
                 <span className="text-xs text-primary">
-                  • {remoteUser.name} editing
+                  • {collabCode.remoteUser.name} editing
                 </span>
               )}
             </div>
@@ -437,7 +437,7 @@ const SessionPage = () => {
           {/* Code Editor Section */}
           <div className="flex-1 flex flex-col min-h-0">
             {/* Editor Header */}
-            {collabCode ? (
+            {isParticipantReady ? (
               <>
                 <EditorHeader
                   selectedLanguage={collabCode.language}
