@@ -72,28 +72,24 @@ const SessionPage = () => {
     ? Object.values(PROBLEMS).find((p) => p.title === session.problem)
     : null;
 
-  // Collaborative code execution hook (uses Stream for real-time sync)
-  const {
-    code,
-    language,
-    output,
-    isRunning,
-    isError,
-    activeOutputTab,
-    setCode,
-    setLanguage,
-    setActiveOutputTab,
-    handleRunCode,
-    isConnected,
-    remoteUser,
-  } = useCollaborativeCode(session?.callId, problemData);
+  // Only initialize collaborative code after participant is set (prevents Stream 403 error)
+  const isParticipantReady =
+    !!session?.participant || (session && session.host?.clerkId === user?.id);
+  const collabCode = isParticipantReady
+    ? useCollaborativeCode(session?.callId, problemData)
+    : null;
 
   // Initialize code when problem data is available
   useEffect(() => {
-    if (problemData?.starterCode?.[language] && !code) {
-      setCode(problemData.starterCode[language]);
+    if (
+      isParticipantReady &&
+      collabCode &&
+      problemData?.starterCode?.[collabCode.language] &&
+      !collabCode.code
+    ) {
+      collabCode.setCode(problemData.starterCode[collabCode.language]);
     }
-  }, [problemData, language, setCode, code]);
+  }, [isParticipantReady, collabCode, problemData]);
 
   // Join session on mount if not host
   useEffect(() => {
@@ -441,40 +437,50 @@ const SessionPage = () => {
           {/* Code Editor Section */}
           <div className="flex-1 flex flex-col min-h-0">
             {/* Editor Header */}
-            <EditorHeader
-              selectedLanguage={language}
-              onLanguageChange={setLanguage}
-              onRunCode={handleRunCode}
-              isRunning={isRunning}
-              isDropdownOpen={isDropdownOpen}
-              setIsDropdownOpen={setIsDropdownOpen}
-              showLanguageIcon={true}
-            />
-
-            {/* Code Editor */}
-            <div className="flex-1 min-h-0">
-              <CodeEditor language={language} code={code} onChange={setCode} />
-            </div>
-
-            {/* Output Resize Handle */}
-            <div
-              onMouseDown={handleOutputResizeStart}
-              className="h-2 bg-base-300 border-t border-b border-base-300 cursor-row-resize hover:bg-primary/30 transition-colors flex items-center justify-center group shrink-0"
-            >
-              <BsGripHorizontal className="h-3 w-3 text-base-content/30 group-hover:text-primary" />
-            </div>
-
-            {/* Output Section */}
-            <OutputPanel
-              output={output}
-              isError={isError}
-              activeTab={activeOutputTab}
-              onTabChange={setActiveOutputTab}
-              height={outputHeight}
-              resizable={false}
-              testcase={problemData?.examples?.[0]?.input}
-              expectedOutput={problemData?.examples?.[0]?.output}
-            />
+            {collabCode ? (
+              <>
+                <EditorHeader
+                  selectedLanguage={collabCode.language}
+                  onLanguageChange={collabCode.setLanguage}
+                  onRunCode={collabCode.handleRunCode}
+                  isRunning={collabCode.isRunning}
+                  isDropdownOpen={isDropdownOpen}
+                  setIsDropdownOpen={setIsDropdownOpen}
+                  showLanguageIcon={true}
+                />
+                {/* Code Editor */}
+                <div className="flex-1 min-h-0">
+                  <CodeEditor
+                    language={collabCode.language}
+                    code={collabCode.code}
+                    onChange={collabCode.setCode}
+                  />
+                </div>
+                {/* Output Resize Handle */}
+                <div
+                  onMouseDown={handleOutputResizeStart}
+                  className="h-2 bg-base-300 border-t border-b border-base-300 cursor-row-resize hover:bg-primary/30 transition-colors flex items-center justify-center group shrink-0"
+                >
+                  <BsGripHorizontal className="h-3 w-3 text-base-content/30 group-hover:text-primary" />
+                </div>
+                {/* Output Section */}
+                <OutputPanel
+                  output={collabCode.output}
+                  isError={collabCode.isError}
+                  activeTab={collabCode.activeOutputTab}
+                  onTabChange={collabCode.setActiveOutputTab}
+                  height={outputHeight}
+                  resizable={false}
+                  testcase={problemData?.examples?.[0]?.input}
+                  expectedOutput={problemData?.examples?.[0]?.output}
+                />
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center text-base-content/60">
+                <LuLoader className="h-8 w-8 text-primary animate-spin mr-2" />
+                Connecting to code collaboration...
+              </div>
+            )}
           </div>
         </div>
 

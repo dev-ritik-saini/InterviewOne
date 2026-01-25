@@ -35,8 +35,9 @@ export const useCollaborativeCode = (channelId, problemData) => {
         await ch.watch();
         setChannel(ch);
         setIsConnected(true);
+        console.log("[CollabCode] Channel watch succeeded for user:", client.userID, channelId);
       } catch (err) {
-        console.error("Error initializing code sync channel:", err);
+        console.error("[CollabCode] Error initializing code sync channel for user:", client?.userID, channelId, err);
         setIsConnected(false);
       }
     };
@@ -51,7 +52,7 @@ export const useCollaborativeCode = (channelId, problemData) => {
 
   // Create debounced send function
   const sendCodeUpdateRef = useRef(null);
-  
+
   useEffect(() => {
     sendCodeUpdateRef.current = debounce(async (newCode, newLanguage) => {
       if (!channel || !isConnected || !client) return;
@@ -200,7 +201,7 @@ export const useCollaborativeCode = (channelId, problemData) => {
       // Only send if it's a local change
       if (!isLocalChange.current) {
         sendLanguageChange(newLanguage);
-        
+
         // Update code to new language's starter code
         if (problemData?.starterCode?.[newLanguage]) {
           const newCode = problemData.starterCode[newLanguage];
