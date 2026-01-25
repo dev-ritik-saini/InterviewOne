@@ -345,10 +345,10 @@ const SessionPage = () => {
             {/* Collaboration Status */}
             <div className="flex items-center gap-2">
               <BsCircleFill
-                className={`h-2 w-2 ${isConnected ? "text-success" : "text-warning"}`}
+                className={`h-2 w-2 ${collabCode?.isConnected ? "text-success" : "text-warning"}`}
               />
               <span className="text-xs text-base-content/60">
-                {isConnected ? "Live Sync" : "Connecting..."}
+                {collabCode?.isConnected ? "Live Sync" : "Connecting..."}
               </span>
               {remoteUser && (
                 <span className="text-xs text-primary">
