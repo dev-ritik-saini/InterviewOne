@@ -10,9 +10,28 @@ import sessionRoutes from "./routes/sessionRoutes.js"
 const app = express();
 
 //Handling cors policy - MUST be before other middleware and routes
+const allowedOrigins = [
+    ENV.CLIENT_URL,
+    "https://interviewone.onrender.com",
+    "http://localhost:5173",
+    "http://localhost:3000",
+].filter(Boolean);
+
 app.use(cors({
-    origin: ENV.CLIENT_URL,
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, curl, Postman, etc.)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log("CORS blocked origin:", origin);
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 }));
 
 //middlewares 
