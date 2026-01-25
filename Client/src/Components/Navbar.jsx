@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import { BsCodeSlash, BsGrid } from "react-icons/bs";
 import toast from "react-hot-toast";
@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 const Navbar = () => {
   const { isSignedIn, isLoaded, user } = useUser();
   const prevSignedIn = useRef(null);
+  const location = useLocation();
+  const pathname = location.pathname;
 
   // Show toast on sign in/out
   useEffect(() => {
@@ -43,11 +45,25 @@ const Navbar = () => {
             <span className="loading loading-spinner loading-sm"></span>
           ) : isSignedIn ? (
             <>
-              <Link to="/problems" className="btn btn-primary btn-sm gap-2">
+              <Link
+                to="/problems"
+                className={
+                  pathname.startsWith("/problems")
+                    ? "btn btn-primary btn-sm gap-2"
+                    : "btn btn-ghost btn-sm gap-2"
+                }
+              >
                 <BsCodeSlash className="h-4 w-4" />
                 Problems
               </Link>
-              <Link to="/dashboard" className="btn btn-ghost btn-sm gap-2">
+              <Link
+                to="/dashboard"
+                className={
+                  pathname.startsWith("/dashboard")
+                    ? "btn btn-primary btn-sm gap-2"
+                    : "btn btn-ghost btn-sm gap-2"
+                }
+              >
                 <BsGrid className="h-4 w-4" />
                 Dashboard
               </Link>
