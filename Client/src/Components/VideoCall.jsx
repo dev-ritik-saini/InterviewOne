@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   useCall,
   useCallStateHooks,
@@ -87,6 +88,13 @@ const VideoCallUI = () => {
   const { useCallCallingState, useParticipantCount } = useCallStateHooks();
   const callingState = useCallCallingState();
   const participantCount = useParticipantCount();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (callingState === CallingState.LEFT) {
+      navigate("/dashboard");
+    }
+  }, [callingState, navigate]);
 
   if (callingState === CallingState.JOINING) {
     return (
@@ -100,14 +108,8 @@ const VideoCallUI = () => {
   }
 
   if (callingState === CallingState.LEFT) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-base-300/50">
-        <div className="text-center">
-          <BsCameraVideoOff className="h-10 w-10 text-base-content/40 mx-auto mb-3" />
-          <p className="text-base-content/60 text-sm">You left the call</p>
-        </div>
-      </div>
-    );
+    // Optionally render nothing or a loader while redirecting
+    return null;
   }
 
   return (

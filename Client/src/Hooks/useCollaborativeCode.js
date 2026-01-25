@@ -35,8 +35,9 @@ export const useCollaborativeCode = (channelId, problemData) => {
         await ch.watch();
         setChannel(ch);
         setIsConnected(true);
+        console.log("[CollabCode] Channel watch succeeded for user:", client.userID, channelId);
       } catch (err) {
-        console.error("Error initializing code sync channel:", err);
+        console.error("[CollabCode] Error initializing code sync channel for user:", client?.userID, channelId, err);
         setIsConnected(false);
       }
     };
