@@ -45,6 +45,13 @@
     background: oklch(var(--b3) / 0.8);
     display: flex !important;
     gap: 0.5rem;
+    padding: 0.75rem !important;
+    justify-content: center;
+    align-items: center;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 50 !important;
 }
 
 .str-video__call-controls__button {
@@ -59,6 +66,8 @@
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .str-video__call-controls__button:hover {
@@ -77,4 +86,103 @@
 
 .str-video__participant-view {
     background: oklch(var(--b3));
+}
+
+/* Ensure video call controls are always visible */
+.str-video__call-controls,
+[class*="str-video__call-controls"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Fix for hidden buttons */
+.str-video__composite-button,
+.str-video__composite-button__button,
+.str-video__call-controls button,
+.str-video__icon-button {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: oklch(var(--b2)) !important;
+    color: oklch(var(--bc)) !important;
+    border-radius: 50% !important;
+    width: 44px !important;
+    height: 44px !important;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.str-video__composite-button__button:hover,
+.str-video__call-controls button:hover {
+    background: oklch(var(--b1)) !important;
+}
+
+/* Red color for leave/end call button */
+.str-video__call-controls__button--leave,
+[class*="leave-call"],
+.str-video__composite-button--leave {
+    background: oklch(var(--er)) !important;
+    color: white !important;
+}
+
+/* Icon visibility */
+.str-video__call-controls svg,
+.str-video__composite-button svg,
+.str-video__icon-button svg {
+    width: 20px !important;
+    height: 20px !important;
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Stream Video Participant Menu / Dropdown Fix */
+.str-video__participant-view__menu,
+.str-video__menu-container,
+.str-video__dropdown,
+.str-video__dropdown-menu,
+[class*="str-video__menu"],
+[class*="str-video__dropdown"] {
+    background: oklch(var(--b2)) !important;
+    border: 1px solid oklch(var(--b3)) !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+    padding: 0.5rem !important;
+    z-index: 100 !important;
+}
+
+.str-video__participant-view__menu button,
+.str-video__menu-container button,
+.str-video__dropdown button,
+.str-video__dropdown-menu button,
+[class*="str-video__menu"] button,
+[class*="str-video__dropdown"] button {
+    background: transparent !important;
+    color: oklch(var(--bc)) !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.375rem !important;
+    width: 100% !important;
+    text-align: left !important;
+    font-size: 0.875rem !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: block !important;
+    height: auto !important;
+}
+
+.str-video__participant-view__menu button:hover,
+.str-video__menu-container button:hover,
+.str-video__dropdown button:hover,
+[class*="str-video__menu"] button:hover,
+[class*="str-video__dropdown"] button:hover {
+    background: oklch(var(--b3)) !important;
+}
+
+/* Hide the three-dot menu on participant tiles */
+.str-video__participant-view__menu-toggle,
+.str-video__participant-view__options,
+[class*="menu-toggle"],
+[class*="options-button"] {
+    display: none !important;
 }

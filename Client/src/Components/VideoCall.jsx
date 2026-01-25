@@ -5,11 +5,82 @@ import {
   CallingState,
   StreamCall,
   SpeakerLayout,
-  CallControls,
   useStreamVideoClient,
 } from "@stream-io/video-react-sdk";
 import { LuLoader } from "react-icons/lu";
-import { BsCameraVideo, BsCameraVideoOff } from "react-icons/bs";
+import {
+  BsCameraVideo,
+  BsCameraVideoOff,
+  BsMic,
+  BsMicMute,
+  BsTelephoneX,
+} from "react-icons/bs";
+
+const CustomCallControls = () => {
+  const call = useCall();
+  const { useMicrophoneState, useCameraState } = useCallStateHooks();
+  const { microphone, isMute: isMicMuted } = useMicrophoneState();
+  const { camera, isMute: isCameraMuted } = useCameraState();
+
+  const toggleMic = async () => {
+    await microphone.toggle();
+  };
+
+  const toggleCamera = async () => {
+    await camera.toggle();
+  };
+
+  const leaveCall = async () => {
+    await call?.leave();
+  };
+
+  return (
+    <div className="flex items-center justify-center gap-4">
+      {/* Microphone Toggle */}
+      <button
+        onClick={toggleMic}
+        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+          isMicMuted
+            ? "bg-error text-white hover:bg-error/80"
+            : "bg-base-200 text-base-content hover:bg-base-100"
+        }`}
+        title={isMicMuted ? "Unmute" : "Mute"}
+      >
+        {isMicMuted ? (
+          <BsMicMute className="w-5 h-5" />
+        ) : (
+          <BsMic className="w-5 h-5" />
+        )}
+      </button>
+
+      {/* Camera Toggle */}
+      <button
+        onClick={toggleCamera}
+        className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+          isCameraMuted
+            ? "bg-error text-white hover:bg-error/80"
+            : "bg-base-200 text-base-content hover:bg-base-100"
+        }`}
+        title={isCameraMuted ? "Turn on camera" : "Turn off camera"}
+      >
+        {isCameraMuted ? (
+          <BsCameraVideoOff className="w-5 h-5" />
+        ) : (
+          <BsCameraVideo className="w-5 h-5" />
+        )}
+      </button>
+
+      {/* Leave Call */}
+      <button
+        onClick={leaveCall}
+        className="w-12 h-12 rounded-full bg-error text-white flex items-center justify-center hover:bg-error/80 transition-all"
+        title="Leave call"
+      >
+        <BsTelephoneX className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};
 
 const VideoCallUI = () => {
   const call = useCall();
@@ -46,9 +117,9 @@ const VideoCallUI = () => {
         <SpeakerLayout participantsBarPosition="bottom" />
       </div>
 
-      {/* Call Controls */}
-      <div className="shrink-0 p-3 bg-base-300 border-t border-base-300 flex justify-center">
-        <CallControls />
+      {/* Custom Call Controls */}
+      <div className="shrink-0 p-4 bg-base-300 border-t border-base-200 flex justify-center">
+        <CustomCallControls />
       </div>
     </div>
   );
